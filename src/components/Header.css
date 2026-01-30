@@ -167,6 +167,16 @@
   width: 80%;
 }
 
+.home-link {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.home-link:hover {
+  background: rgba(233, 30, 99, 0.1);
+  transform: translateY(-1px);
+}
+
 .sale-link {
   color: var(--primary-color);
   font-weight: 600;

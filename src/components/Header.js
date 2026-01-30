@@ -58,6 +58,7 @@ const Header = ({ cartCount = 0 }) => {
 
           {/* Desktop Navigation */}
           <nav className="desktop-nav" aria-label="Main navigation">
+            <Link to="/" className="nav-link home-link">Home</Link>
             <Link to="/products" className="nav-link">Products</Link>
             <Link to="/products?category=skincare" className="nav-link">Skincare</Link>
             <Link to="/products?category=makeup" className="nav-link">Makeup</Link>
@@ -130,6 +131,7 @@ const Header = ({ cartCount = 0 }) => {
         {/* Mobile Menu */}
         <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
           <nav className="mobile-nav" aria-label="Mobile navigation">
+            <Link to="/" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>🏠 Home</Link>
             <Link to="/products" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Products</Link>
             <Link to="/products?category=skincare" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Skincare</Link>
             <Link to="/products?category=makeup" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Makeup</Link>
