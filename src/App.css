@@ -1,0 +1,116 @@
+/* ========================================= */
+/* 🌍 Global Styles                          */
+/* ========================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: 
+    linear-gradient(
+      rgba(255, 182, 193, 0.4),
+      rgba(255, 215, 0, 0.4)
+    ),
+    url('https://images.unsplash.com/photo-1613470209413-bbdb7f3fdd86?auto=format&fit=crop&w=1200&q=80')
+    no-repeat center center fixed;
+  background-size: cover;
+  color: #333;
+  line-height: 1.6;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Buttons */
+.btn {
+  background-color: #e91e63; /* Pink accent */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background-color: #c2185b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  main {
+    padding: 10px;
+  }
+}
+
+/* ========================================= */
+/* ⚡ Splash Screen Styles (Full Screen)     */
+/* ========================================= */
+
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 9999;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Optional overlay to make text pop */
+.splash-overlay {
+  width: 100%;
+  height: 100%;
+  backdrop-filter: brightness(0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* Brand text */
+.splash-text {
+  font-size: 3rem;
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  animation: textFade 2s ease-in-out;
+}
+
+/* === Animations === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes textFade {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* === Fade-In Effect for App after Splash === */
+.fade-in {
+  animation: fadeIn 1.2s ease-in forwards;
+}

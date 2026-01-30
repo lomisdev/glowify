@@ -1,0 +1,72 @@
+.shipping-page {
+    font-family: 'Poppins', sans-serif;
+    background-color: #fff7fc;
+    color: #333;
+    padding: 60px 10%;
+    line-height: 1.7;
+  }
+  
+  .shipping-header {
+    text-align: center;
+    background: linear-gradient(90deg, #e91e63, #fdd835);
+    color: white;
+    padding: 50px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+  
+  .shipping-header h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  .shipping-header p {
+    font-size: 1.1rem;
+  }
+  
+  .shipping-section, .benefits-section, .why-sui-section {
+    background-color: white;
+    border-radius: 12px;
+    margin-top: 40px;
+    padding: 30px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  }
+  
+  .shipping-section h2,
+  .benefits-section h2,
+  .why-sui-section h2 {
+    color: #e91e63;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .shipping-section ol {
+    padding-left: 20px;
+  }
+  
+  .shipping-section li {
+    margin-bottom: 12px;
+  }
+  
+  .benefits-section ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .benefits-section li {
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  
+  .why-sui-section p {
+    text-align: center;
+    font-size: 1.05rem;
+  }
+  
+  .shipping-footer {
+    text-align: center;
+    margin-top: 50px;
+    font-weight: 600;
+    color: #e91e63;
+  }
+  
