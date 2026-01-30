@@ -44,14 +44,13 @@ function App() {
             <Routes>
               <Route path="/" element={<Homepage />} />
               <Route path="/about" element={<About />} />
-              <Route path="/products" element={<ProductListing />} />
-              <Route path="/product/:id" element={<Products />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/product/:id" element={<ProductListing />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/shipping-returns" element={<ShippingReturns />} />
               <Route path="/account" element={<AccountAuth />} />
-              <Route path="/products" elements={<Products />} />
               <Route path='admin' element={<AdminPanel/>} /> 
             </Routes>
           </main>
