@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useCart } from '../context/CartContext';
+import { useFavorites } from '../context/FavoritesContext';
+import { productsList } from '../data/products';
+import ProductCard from '../components/ProductCard';
 import "./Products.css";
 
 const Products = () => {
+  const { addItem } = useCart();
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -14,85 +20,34 @@ const Products = () => {
   useEffect(() => {
     // Simulate loading and fetch products
     const timer = setTimeout(() => {
-      const savedProducts = JSON.parse(localStorage.getItem("products")) || [
-        {
-          id: 1,
-          name: 'Rose Lip Balm',
-          price: 1500,
-          originalPrice: 2000,
-          image: '/products/rose-lip-balm.jpg',
-          category: 'makeup',
-          rating: 4.5,
-          reviews: 128,
-          discount: 25,
-          inStock: true
-        },
-        {
-          id: 2,
-          name: 'Hydrating Face Serum',
-          price: 3500,
-          originalPrice: 4500,
-          image: '/products/hydrating-serum.jpg',
-          category: 'skincare',
-          rating: 4.8,
-          reviews: 89,
-          discount: 22,
-          inStock: true
-        },
-        {
-          id: 3,
-          name: 'Glow Foundation',
-          price: 2800,
-          originalPrice: 3500,
-          image: '/products/glow-foundation.jpg',
-          category: 'makeup',
-          rating: 4.6,
-          reviews: 203,
-          discount: 20,
-          inStock: true
-        },
-        {
-          id: 4,
-          name: 'Matte Lipstick Set',
-          price: 2200,
-          originalPrice: 2800,
-          image: '/products/matte-lipstick.jpg',
-          category: 'makeup',
-          rating: 4.3,
-          reviews: 156,
-          discount: 21,
-          inStock: false
-        },
-        {
-          id: 5,
-          name: 'Vitamin C Moisturizer',
-          price: 1800,
-          originalPrice: 2400,
-          image: '/products/vitamin-c-serum.jpg',
-          category: 'skincare',
-          rating: 4.7,
-          reviews: 92,
-          discount: 25,
-          inStock: true
-        },
-        {
-          id: 6,
-          name: 'Volume Mascara',
-          price: 3200,
-          originalPrice: 4000,
-          image: '/products/mascara-volume.jpg',
-          category: 'makeup',
-          rating: 4.4,
-          reviews: 78,
-          discount: 20,
-          inStock: true
-        }
-      ];
-      setProducts(savedProducts);
+      // Check if admin has added custom products
+      const savedProducts = JSON.parse(localStorage.getItem("products")) || [];
+
+      // Cache bust: Force all base products to use the fresh definitions from products.js (fixes broken remote URLs)
+      const freshIds = productsList.map(p => p.id);
+      const adminAddedProducts = savedProducts.filter(p => !freshIds.includes(p.id));
+
+      const mergedProducts = [...productsList, ...adminAddedProducts];
+      setProducts(mergedProducts);
+      localStorage.setItem("products", JSON.stringify(mergedProducts));
       setIsLoading(false);
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleAddToCart = (product) => {
+    if (product.inStock) {
+      addItem(product);
+    }
+  };
+
+  const handleToggleFavorite = (product) => {
+    if (isFavorite(product.id)) {
+      removeFavorite(product.id);
+    } else {
+      addFavorite(product);
+    }
+  };
 
   const filteredProducts = products.filter(product => {
     if (filters.category !== 'all' && product.category !== filters.category) {
@@ -209,84 +164,19 @@ const Products = () => {
         ) : filteredProducts.length > 0 ? (
           <div className="products-grid">
             {filteredProducts.map((product) => (
-              <div key={product.id} className="product-card">
-                <div className="product-image-container">
-                  <img
-                    src={product.image || "/images/default-product.jpg"}
-                    alt={product.name}
-                    className="product-image"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/300x300?text=' + encodeURIComponent(product.name);
-                    }}
-                  />
-                  <div className="product-badges">
-                    {product.discount && (
-                      <span className="discount-badge">-{product.discount}%</span>
-                    )}
-                    {!product.inStock && (
-                      <span className="out-of-stock-badge">Out of Stock</span>
-                    )}
-                    <button className="wishlist-btn" aria-label="Add to wishlist">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                <div className="product-info">
-                  <span className="product-category">{product.category}</span>
-                  <h3 className="product-name">{product.name}</h3>
-                  <div className="product-rating">
-                    <div className="stars">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className={i < Math.floor(product.rating) ? 'star filled' : 'star'}>
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                    <span className="rating-text">{product.rating} ({product.reviews})</span>
-                  </div>
-                  <div className="product-price-container">
-                    <span className="current-price">KSh {product.price}</span>
-                    {product.originalPrice && (
-                      <span className="original-price">KSh {product.originalPrice}</span>
-                    )}
-                  </div>
-                  <div className="product-actions">
-                    <Link to={`/product/${product.id}`} className="btn-view-details">
-                      View Details
-                    </Link>
-                    <button 
-                      className={`btn-add-cart ${!product.inStock ? 'disabled' : ''}`}
-                      disabled={!product.inStock}
-                      aria-label={product.inStock ? "Add to cart" : "Out of stock"}
-                    >
-                      {product.inStock ? (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M12 5v14m-7-7h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      ) : (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
           <div className="no-products">
             <div className="no-products-icon">
               <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
             <h3>No products found</h3>
             <p>Try adjusting your filters or search criteria</p>
-            <button 
+            <button
               onClick={() => setFilters({ category: 'all', sortBy: 'name', priceRange: [0, 10000] })}
               className="btn-reset-filters"
             >

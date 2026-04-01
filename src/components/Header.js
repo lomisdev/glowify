@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useFavorites } from '../context/FavoritesContext';
 import './Header.css';
 
-const Header = ({ cartCount = 0 }) => {
+const Header = () => {
+  const { itemCount } = useCart();
+  const { itemCount: favoriteCount } = useFavorites();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
@@ -62,7 +66,6 @@ const Header = ({ cartCount = 0 }) => {
             <Link to="/products" className="nav-link">Products</Link>
             <Link to="/products?category=skincare" className="nav-link">Skincare</Link>
             <Link to="/products?category=makeup" className="nav-link">Makeup</Link>
-            <Link to="/products?category=fragrance" className="nav-link">Fragrance</Link>
             <Link to="/sale" className="nav-link sale-link">Sale</Link>
           </nav>
 
@@ -99,18 +102,23 @@ const Header = ({ cartCount = 0 }) => {
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <span className="action-label">Favorites</span>
+              {favoriteCount > 0 && (
+                <span className="favorite-count" aria-label={`${favoriteCount} items in favorites`}>
+                  {favoriteCount}
+                </span>
+              )}
             </Link>
 
-            <Link to="/cart" className="action-btn cart-btn" aria-label={`Shopping cart with ${cartCount} items`}>
+            <Link to="/cart" className="action-btn cart-btn" aria-label={`Shopping cart with ${itemCount} items`}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M20 22C20.5523 22 21 21.5523 21 21C21 20.4477 20.5523 20 20 20C19.4477 20 19 20.4477 19 21C19 21.5523 19.4477 22 20 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M1 1h5l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <span className="action-label">Cart</span>
-              {cartCount > 0 && (
-                <span className="cart-count" aria-label={`${cartCount} items in cart`}>
-                  {cartCount}
+              {itemCount > 0 && (
+                <span className="cart-count" aria-label={`${itemCount} items in cart`}>
+                  {itemCount}
                 </span>
               )}
             </Link>
@@ -135,11 +143,10 @@ const Header = ({ cartCount = 0 }) => {
             <Link to="/products" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Products</Link>
             <Link to="/products?category=skincare" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Skincare</Link>
             <Link to="/products?category=makeup" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Makeup</Link>
-            <Link to="/products?category=fragrance" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Fragrance</Link>
             <Link to="/sale" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Sale</Link>
-            <Link to="/account" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>My Account</Link>
-            <Link to="/favorites" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Favorites</Link>
-            <Link to="/cart" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Shopping Cart</Link>
+            <Link to="/account" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>👤 My Account</Link>
+            <Link to="/favorites" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>❤️ Favorites</Link>
+            <Link to="/cart" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>🛒 Shopping Cart</Link>
           </nav>
         </div>
       </header>

@@ -1,38 +1,55 @@
 /* ===== Global Styles ===== */
 :root {
-  /* Brand Colors */
-  --primary-color: #e91e63;
-  --primary-dark: #c2185b;
-  --primary-light: #f8bbd0;
-  --accent-color: #ffca28;
-  
+  /* Brand Colors - Soft Ethereal */
+  --primary-color: #DCA4A1;
+  --primary-dark: #BD7A77;
+  --primary-light: #F4DCDA;
+  --accent-color: #D8A868;
+
   /* Text Colors */
-  --text-main: #1a1a1a;
-  --text-secondary: #5a5a5a;
-  --text-light: #888888;
-  
+  --text-main: #2D2828;
+  --text-secondary: #5C5656;
+  --text-light: #8E8787;
+  --text-white: #FFFFFF;
+
   /* Backgrounds */
-  --bg-main: #ffffff;
-  --bg-secondary: #fafafa;
-  --bg-tertiary: #f5f5f5;
-  
-  /* UI Elements */
-  --border-radius-sm: 8px;
-  --border-radius-md: 16px;
-  --border-radius-lg: 24px;
+  --bg-main: #FFFFFF;
+  --bg-secondary: #FBF9F8;
+  --bg-tertiary: #F1EDEB;
+  --bg-light: #FAFAFA;
+
+  /* UI Elements - Flattened for luxury feel */
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+  --border-radius-lg: 8px;
   --border-radius-full: 9999px;
-  
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 12px 32px rgba(233, 30, 99, 0.15);
-  
-  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
+  --border-color: #E8E4E1;
+  --shadow-light: rgba(220, 164, 161, 0.1);
+  --shadow-medium: rgba(220, 164, 161, 0.15);
+  --shadow-dark: rgba(220, 164, 161, 0.2);
+
+  /* Status Colors */
+  --success-color: #8E9B82;
+  --warning-color: #D99B78;
+  --error-color: #E57373;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #DCA4A1 0%, #BD7A77 100%);
+  --gradient-background: linear-gradient(135deg, rgba(251, 249, 248, 0.8) 0%, rgba(241, 237, 235, 0.8) 100%);
+  --gradient-accent: linear-gradient(135deg, #D8A868 0%, #C49A5C 100%);
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
   /* Fonts */
-  --font-heading: 'Outfit', sans-serif;
+  --font-heading: 'Playfair Display', serif;
   --font-body: 'Inter', sans-serif;
 }
+
+/* Import Animations */
+@import './styles/animations.css';
 
 body {
   margin: 0;
@@ -43,28 +60,21 @@ body {
   background: var(--bg-secondary);
   color: var(--text-main);
   line-height: 1.6;
+  overflow-x: hidden;
+  /* Prevent horizontal overflow */
+  min-height: 100vh;
 }
 
 /* Optional: Add a background image (for branding) */
-body.with-logo {
-  background: url("./glowify-logo.jpg") no-repeat center center fixed;
-  background-size: cover;
-  color: white;
+body.with-logo {}
+
+html {
+  scroll-behavior: smooth;
 }
 
-/* ===== Headings ===== */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  color: var(--text-main);
-  margin-top: 0;
-  line-height: 1.25;
-}
-
-/* ===== Links ===== */
 a {
-  text-decoration: none;
   color: var(--primary-color);
+  text-decoration: none;
   transition: color var(--transition-fast);
 }
 
@@ -72,11 +82,62 @@ a:hover {
   color: var(--primary-dark);
 }
 
+button {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--text-main);
+  margin-top: 0;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+/* Optional: Add a background image (for branding) */
+body.with-logo {
+  background: url("./assets/glowify-logo.jpg") no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+}
+
 /* ===== Utility Classes ===== */
 .container {
   max-width: 1200px;
   margin: auto;
   padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===== Responsive Container ===== */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 720px;
+    padding: 0 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
 }
 
 /* ===== Smooth Fade Effect ===== */
@@ -85,6 +146,11 @@ a:hover {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

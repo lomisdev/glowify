@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useFavorites } from '../context/FavoritesContext';
+import { getFeaturedProducts } from '../data/products';
+import ProductCard from '../components/ProductCard';
+import hydratingSerum from '../assets/products/hydrating-serum.jpg';
 import './Homepage.css';
 
-// Import local product images
-import roseLipBalm from '../assets/products/rose-lip-balm.jpg';
-import hydratingSerum from '../assets/products/hydrating-serum.jpg';
-import glowFoundation from '../assets/products/glow-foundation.jpg';
-import matteLipstick from '../assets/products/matte-lipstick.jpg';
-
 const Homepage = () => {
+  const { addItem, itemCount } = useCart();
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [newsletterSuccess, setNewsletterSuccess] = useState(false);
 
   const heroSlides = [
     {
@@ -33,7 +37,7 @@ const Homepage = () => {
       title: "Pure Skincare",
       highlight: "Essentials",
       subtitle: "Nourish your skin with our 100% organic and cruelty-free formulas",
-      image: "https://images.unsplash.com/photo-1556228720-19876274e7fc?auto=format&fit=crop&w=1920&q=80",
+      image: hydratingSerum,
     }
   ];
 
@@ -47,59 +51,61 @@ const Homepage = () => {
   useEffect(() => {
     // Simulate loading
     const timer = setTimeout(() => {
-      setFeaturedProducts([
-        { 
-          id: 1, 
-          name: 'Rose Lip Balm', 
-          price: 15, 
-          originalPrice: 20,
-          image: roseLipBalm, 
-          discount: 25,
-          rating: 4.5,
-          reviews: 128
-        },
-        { 
-          id: 2, 
-          name: 'Hydrating Serum', 
-          price: 25, 
-          originalPrice: 35,
-          image: hydratingSerum, 
-          discount: 29,
-          rating: 4.8,
-          reviews: 89
-        },
-        { 
-          id: 3, 
-          name: 'Glow Foundation', 
-          price: 30, 
-          originalPrice: 45,
-          image: glowFoundation, 
-          discount: 33,
-          rating: 4.6,
-          reviews: 203
-        },
-        { 
-          id: 4, 
-          name: 'Matte Lipstick', 
-          price: 18, 
-          originalPrice: 24,
-          image: matteLipstick, 
-          discount: 25,
-          rating: 4.3,
-          reviews: 156
-        },
-      ]);
+      setFeaturedProducts(getFeaturedProducts());
       setIsLoading(false);
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleNewsletterSubmit = (e) => {
+    e.preventDefault();
+    setEmailError('');
+    setNewsletterSuccess(false);
+
+    if (!email.trim()) {
+      setEmailError('Email address is required');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+
+    // Simulate newsletter signup
+    console.log('Newsletter signup:', email);
+    setNewsletterSuccess(true);
+    setEmail('');
+
+    // Reset success message after 5 seconds
+    setTimeout(() => {
+      setNewsletterSuccess(false);
+    }, 5000);
+  };
+
+  const handleAddToCart = (product) => {
+    addItem(product);
+  };
+
+  const handleToggleFavorite = (product) => {
+    if (isFavorite(product.id)) {
+      removeFavorite(product.id);
+    } else {
+      addFavorite(product);
+    }
+  };
+
   const categories = [
-    { name: 'Skincare', icon: '💧', count: 245, color: '#e3f2fd' },
-    { name: 'Makeup', icon: '💄', count: 189, color: '#fce4ec' },
-    { name: 'Fragrance', icon: '🌸', count: 98, color: '#f3e5f5' },
-    { name: 'Haircare', icon: '💇', count: 156, color: '#e8f5e8' },
-    { name: 'Accessories', icon: '👜', count: 67, color: '#fff3e0' },
+    { name: 'Skincare', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" /></svg>, count: 245, color: '#FBF9F8' },
+    { name: 'Makeup', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10" /><path d="M12 21a9 9 0 0 1-9-9c0-4.97 4.03-9 9-9v18z" /></svg>, count: 189, color: '#F4DCDA' },
+    { name: 'Fragrance', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10" /><path d="M12 8v4l3 3" /></svg>, count: 98, color: '#F1EDEB' },
+    { name: 'Haircare', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>, count: 156, color: '#FBF9F8' },
+    { name: 'Accessories', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" /></svg>, count: 67, color: '#F4DCDA' },
   ];
 
   const benefits = [
@@ -135,11 +141,11 @@ const Homepage = () => {
       {/* === Hero Slider Section === */}
       <section className="hero-section">
         {heroSlides.map((slide, index) => (
-          <div 
+          <div
             key={slide.id}
             className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
             style={{
-              backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2)), url(${slide.image})`
+              backgroundImage: `linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.2)), url(${slide.image})`
             }}
           >
             <div className={`hero-content ${index === currentSlide ? 'active' : ''}`}>
@@ -154,7 +160,7 @@ const Homepage = () => {
                 <Link to="/products" className="btn-primary">
                   Shop Now
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </Link>
                 <Link to="/about" className="btn-secondary">
@@ -164,7 +170,7 @@ const Homepage = () => {
             </div>
           </div>
         ))}
-        
+
         <div className="hero-dots">
           {heroSlides.map((_, index) => (
             <button
@@ -213,7 +219,7 @@ const Homepage = () => {
                 </div>
                 <div className="category-arrow">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               </Link>
@@ -229,7 +235,7 @@ const Homepage = () => {
             <h2>Featured Products</h2>
             <p>Hand-picked favorites from our collection</p>
           </div>
-          
+
           {isLoading ? (
             <div className="loading-grid">
               {[...Array(4)].map((_, index) => (
@@ -246,55 +252,16 @@ const Homepage = () => {
           ) : (
             <div className="products-grid">
               {featuredProducts.map(product => (
-                <div key={product.id} className="product-card">
-                  <div className="product-image-container">
-                    <img src={product.image} alt={product.name} className="product-image" />
-                    <div className="product-badges">
-                      <span className="discount-badge">-{product.discount}%</span>
-                      <button className="wishlist-btn" aria-label="Add to wishlist">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="product-info">
-                    <h3 className="product-name">{product.name}</h3>
-                    <div className="product-rating">
-                      <div className="stars">
-                        {[...Array(5)].map((_, i) => (
-                          <span key={i} className={i < Math.floor(product.rating) ? 'star filled' : 'star'}>
-                            ★
-                          </span>
-                        ))}
-                      </div>
-                      <span className="rating-text">{product.rating} ({product.reviews})</span>
-                    </div>
-                    <div className="product-price-container">
-                      <span className="current-price">KSh {product.price * 100}</span>
-                      <span className="original-price">KSh {product.originalPrice * 100}</span>
-                    </div>
-                    <div className="product-actions">
-                      <Link to={`/product/${product.id}`} className="btn-view-details">
-                        View Details
-                      </Link>
-                      <button className="btn-add-cart">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M12 5v14m-7-7h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           )}
-          
+
           <div className="section-footer">
             <Link to="/products" className="btn-view-all">
               View All Products
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
           </div>
@@ -332,9 +299,28 @@ const Homepage = () => {
           <div className="newsletter-content">
             <h2>Stay in the Glow</h2>
             <p>Get exclusive offers and be the first to know about new products</p>
-            <form className="newsletter-form">
-              <input type="email" placeholder="Enter your email address" required />
-              <button type="submit" className="btn-newsletter">Subscribe</button>
+            <form className="newsletter-form" onSubmit={handleNewsletterSubmit}>
+              <div className="newsletter-input-group">
+                <input
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`newsletter-input ${emailError ? 'error' : ''}`}
+                  aria-label="Email address"
+                />
+                <button type="submit" className="btn-newsletter">Subscribe</button>
+              </div>
+              {emailError && (
+                <div className="newsletter-error" role="alert">
+                  {emailError}
+                </div>
+              )}
+              {newsletterSuccess && (
+                <div className="newsletter-success" role="status">
+                  🎉 Thank you for subscribing! Check your email for confirmation.
+                </div>
+              )}
             </form>
           </div>
         </div>
