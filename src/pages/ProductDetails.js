@@ -331,7 +331,7 @@ const ProductDetails = () => {
           <span>/</span>
           <Link to="/products">Products</Link>
           <span>/</span>
-          <span>{product.name}</span>
+          <span>{product ? product.name : 'Loading...'}</span>
         </nav>
 
         <div className="product-details-container">
@@ -339,15 +339,17 @@ const ProductDetails = () => {
           <div className="product-images">
             <div className="main-image">
               <img 
-                src={product.images[selectedImage]} 
-                alt={product.name}
+                src={product && product.images ? product.images[selectedImage] : ''} 
+                alt={product ? product.name : 'Product image'}
                 onError={(e) => {
-                  e.target.src = `https://via.placeholder.com/600x600/e91e63/ffffff?text=${encodeURIComponent(product.name)}`;
+                  if (product) {
+                    e.target.src = `https://via.placeholder.com/600x600/e91e63/ffffff?text=${encodeURIComponent(product.name)}`;
+                  }
                 }}
               />
             </div>
             <div className="image-thumbnails">
-              {product.images.map((image, index) => (
+              {product && product.images && product.images.map((image, index) => (
                 <button
                   key={index}
                   className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
@@ -357,7 +359,7 @@ const ProductDetails = () => {
                     src={image} 
                     alt={`${product.name} ${index + 1}`}
                     onError={(e) => {
-                      e.target.src = `https://via.placeholder.com/80x80/e91e63/ffffff?text=${encodeURIComponent(product.name.charAt(0))}`;
+                      e.target.src = `https://via.placeholder.com/80x80/e91e63/ffffff?text=${encodeURIComponent(product.name ? product.name.charAt(0) : 'P')}`;
                     }}
                   />
                 </button>
@@ -368,19 +370,19 @@ const ProductDetails = () => {
           {/* Product Info */}
           <div className="product-info">
             <div className="product-header">
-              <span className="product-category">{product.category}</span>
-              <h1 className="product-title">{product.name}</h1>
+              <span className="product-category">{product ? product.category : ''}</span>
+              <h1 className="product-title">{product ? product.name : 'Loading...'}</h1>
               
               {/* Rating */}
               <div className="product-rating">
                 <div className="stars">
                   {[...Array(5)].map((_, i) => (
-                    <span key={i} className={i < Math.floor(product.rating) ? 'star filled' : 'star'}>
+                    <span key={i} className={i < Math.floor(product ? product.rating || 0 : 0) ? 'star filled' : 'star'}>
                       ★
                     </span>
                   ))}
                 </div>
-                <span className="rating-text">{product.rating} ({product.reviews} reviews)</span>
+                <span className="rating-text">{product ? (product.rating || 0) : 0} ({product ? (product.reviews || 0) : 0} reviews)</span>
               </div>
 
               {/* Price */}
@@ -397,13 +399,13 @@ const ProductDetails = () => {
 
             {/* Description */}
             <div className="product-description">
-              <p>{product.description}</p>
+              <p>{product ? product.description : 'Loading product description...'}</p>
             </div>
 
             {/* Product Options */}
             <div className="product-options">
               {/* Size Selection */}
-              {product.sizes.length > 0 && (
+              {product && product.sizes && product.sizes.length > 0 && (
                 <div className="option-group">
                   <label>Size:</label>
                   <div className="size-options">
@@ -421,7 +423,7 @@ const ProductDetails = () => {
               )}
 
               {/* Color Selection */}
-              {product.colors.length > 0 && (
+              {product && product.colors && product.colors.length > 0 && (
                 <div className="option-group">
                   <label>Color:</label>
                   <div className="color-options">
@@ -464,21 +466,21 @@ const ProductDetails = () => {
             {/* Action Buttons */}
             <div className="product-actions">
               <button 
-                className={`btn-add-cart ${!product.inStock ? 'disabled' : ''}`}
+                className={`btn-add-cart ${product && !product.inStock ? 'disabled' : ''}`}
                 onClick={handleAddToCart}
-                disabled={!product.inStock}
+                disabled={product && !product.inStock}
               >
-                {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+                {product && !product.inStock ? 'Out of Stock' : 'Add to Cart'}
               </button>
               
               <button 
-                className={`btn-favorite ${isFavorite(product.id) ? 'active' : ''}`}
+                className={`btn-favorite ${product && isFavorite(product.id) ? 'active' : ''}`}
                 onClick={handleToggleFavorite}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill={isFavorite(product.id) ? "currentColor" : "none"}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill={product && isFavorite(product.id) ? "currentColor" : "none"}>
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                {isFavorite(product.id) ? 'Saved' : 'Save'}
+                {product && isFavorite(product.id) ? 'Saved' : 'Save'}
               </button>
             </div>
 
@@ -486,7 +488,7 @@ const ProductDetails = () => {
             <div className="product-features">
               <h3>Key Features</h3>
               <ul>
-                {product.features.map((feature, index) => (
+                {product && product.features && product.features.map((feature, index) => (
                   <li key={index}>✓ {feature}</li>
                 ))}
               </ul>
@@ -494,7 +496,7 @@ const ProductDetails = () => {
 
             {/* Shipping Info */}
             <div className="shipping-info">
-              <p>🚚 {product.shipping}</p>
+              <p>🚚 {product ? product.shipping : 'Loading shipping info...'}</p>
             </div>
           </div>
         </div>
@@ -511,33 +513,33 @@ const ProductDetails = () => {
           <div className="tab-content">
             <div className="tab-pane active">
               <h3>Product Description</h3>
-              <p>{product.description}</p>
+              <p>{product ? product.description : 'Loading product description...'}</p>
               <p>Experience the ultimate in luxury and effectiveness with our carefully crafted formula. Each ingredient is selected for its proven benefits and compatibility with all skin types.</p>
             </div>
             
             <div className="tab-pane">
               <h3>Ingredients</h3>
-              <p>{product.ingredients}</p>
+              <p>{product ? product.ingredients : 'Loading ingredients...'}</p>
             </div>
             
             <div className="tab-pane">
               <h3>How to Use</h3>
-              <p>{product.howToUse}</p>
+              <p>{product ? product.howToUse : 'Loading usage instructions...'}</p>
             </div>
             
             <div className="tab-pane">
               <h3>Customer Reviews</h3>
               <div className="reviews-summary">
                 <div className="overall-rating">
-                  <span className="rating-number">{product.rating}</span>
+                  <span className="rating-number">{product ? (product.rating || 0) : 0}</span>
                   <div className="stars">
                     {[...Array(5)].map((_, i) => (
-                      <span key={i} className={i < Math.floor(product.rating) ? 'star filled' : 'star'}>
+                      <span key={i} className={i < Math.floor(product ? (product.rating || 0) : 0) ? 'star filled' : 'star'}>
                         ★
                       </span>
                     ))}
                   </div>
-                  <span className="reviews-count">Based on {product.reviews} reviews</span>
+                  <span className="reviews-count">Based on {product ? (product.reviews || 0) : 0} reviews</span>
                 </div>
               </div>
             </div>
@@ -550,7 +552,7 @@ const ProductDetails = () => {
           <div className="related-products-grid">
             {/* Dynamic related products based on available sample products */}
             {Object.values(sampleProducts)
-              .filter(p => p.id !== product.id && p.id <= 4)
+              .filter(p => product && p.id !== product.id && p.id <= 4)
               .slice(0, 2)
               .map(relatedProduct => (
                 <div key={relatedProduct.id} className="related-product-card">
