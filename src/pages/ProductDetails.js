@@ -20,7 +20,7 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
-  const [notification, setNotification] = useState('');
+  const [notification, setNotification] = useState({ message: '', type: 'success' });
   const [priceUpdated, setPriceUpdated] = useState(false);
 
   // Sample product data - in real app, this would come from API
@@ -176,15 +176,26 @@ const ProductDetails = () => {
   useEffect(() => {
     // Simulate API call
     setTimeout(() => {
-      const foundProduct = sampleProducts[id];
+      // Handle undefined or invalid ID
+      if (!id) {
+        console.error('No product ID provided');
+        setLoading(false);
+        return;
+      }
+      
+      const productId = parseInt(id); // Convert string ID to number
+      const foundProduct = sampleProducts[productId];
+      
       if (foundProduct) {
         setProduct(foundProduct);
-        if (foundProduct.sizes.length > 0) {
+        if (foundProduct.sizes && foundProduct.sizes.length > 0) {
           setSelectedSize(foundProduct.sizes[0].name);
         }
-        if (foundProduct.colors.length > 0) {
+        if (foundProduct.colors && foundProduct.colors.length > 0) {
           setSelectedColor(foundProduct.colors[0].value);
         }
+      } else {
+        console.error('Product not found for ID:', productId);
       }
       setLoading(false);
     }, 500);
@@ -192,19 +203,27 @@ const ProductDetails = () => {
 
   // Get current price based on selected size
   const getCurrentPrice = () => {
-    if (!product || !selectedSize) return { price: 0, originalPrice: 0, discount: 0 };
+    if (!product) return { price: 0, originalPrice: 0, discount: 0 };
     
-    const selectedSizeObj = product.sizes.find(size => size.name === selectedSize);
-    if (selectedSizeObj) {
-      const discount = Math.round(((selectedSizeObj.originalPrice - selectedSizeObj.price) / selectedSizeObj.originalPrice) * 100);
-      return {
-        price: selectedSizeObj.price,
-        originalPrice: selectedSizeObj.originalPrice,
-        discount
-      };
+    // If product has sizes and a size is selected
+    if (product.sizes && product.sizes.length > 0 && selectedSize) {
+      const selectedSizeObj = product.sizes.find(size => size.name === selectedSize);
+      if (selectedSizeObj) {
+        const discount = Math.round(((selectedSizeObj.originalPrice - selectedSizeObj.price) / selectedSizeObj.originalPrice) * 100);
+        return {
+          price: selectedSizeObj.price,
+          originalPrice: selectedSizeObj.originalPrice,
+          discount
+        };
+      }
     }
     
-    return { price: product.basePrice, originalPrice: product.originalPrice, discount: product.discount };
+    // Fallback to base prices
+    return { 
+      price: product.basePrice || 0, 
+      originalPrice: product.originalPrice || product.basePrice || 0, 
+      discount: product.discount || 0 
+    };
   };
 
   const currentPrice = getCurrentPrice();
@@ -216,7 +235,22 @@ const ProductDetails = () => {
   };
 
   const handleAddToCart = () => {
-    if (product && selectedSize && selectedColor) {
+    try {
+      if (!product) {
+        showNotification('Please wait for product to load', 'error');
+        return;
+      }
+      
+      if (!selectedSize) {
+        showNotification('Please select a size', 'error');
+        return;
+      }
+      
+      if (!selectedColor) {
+        showNotification('Please select a color', 'error');
+        return;
+      }
+      
       const cartItem = {
         ...product,
         price: currentPrice.price,
@@ -226,8 +260,12 @@ const ProductDetails = () => {
         selectedSize,
         selectedColor: selectedColor === 'transparent' ? 'Clear' : selectedColor
       };
+      
       addItem(cartItem);
       showNotification('Product added to cart!');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      showNotification('Failed to add product to cart', 'error');
     }
   };
 
@@ -243,8 +281,8 @@ const ProductDetails = () => {
     }
   };
 
-  const showNotification = (message) => {
-    setNotification(message);
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
     setTimeout(() => setNotification(''), 3000);
   };
 
@@ -281,9 +319,9 @@ const ProductDetails = () => {
     <div className="product-details-page">
       <div className="container">
         {/* Notification */}
-        {notification && (
-          <div className="notification">
-            {notification}
+        {notification.message && (
+          <div className={`notification ${notification.type === 'error' ? 'error' : 'success'}`}>
+            {notification.message}
           </div>
         )}
 
