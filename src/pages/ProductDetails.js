@@ -14,16 +14,18 @@ const ProductDetails = () => {
   const { id } = useParams();
   const { addItem } = useCart();
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
+  
+  // State management
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [notification, setNotification] = useState({ message: '', type: 'success' });
-  const [priceUpdated, setPriceUpdated] = useState(false);
 
-  // Sample product data - in real app, this would come from API
+  // Sample product data
   const sampleProducts = {
     1: {
       id: 1,
@@ -31,181 +33,132 @@ const ProductDetails = () => {
       basePrice: 1500,
       originalPrice: 2000,
       discount: 25,
-      description: 'Experience the luxury of our Rose Lip Balm, enriched with natural rose extract and vitamin E. This nourishing balm provides long-lasting hydration while leaving your lips with a subtle rosy tint and delicate fragrance.',
+      description: 'Experience the luxury of our Rose Lip Balm, enriched with natural rose extract and vitamin E.',
       category: 'makeup',
       inStock: true,
       rating: 4.5,
       reviews: 128,
-      images: [
-        roseLipBalm,
-        roseLipBalm,
-        roseLipBalm,
-        roseLipBalm
-      ],
-      sizes: [
-        { name: '15ml', price: 1500, originalPrice: 2000 },
-        { name: '30ml', price: 2500, originalPrice: 3000 }
-      ],
-      colors: [
-        { name: 'Rose Pink', value: '#FFB6C1' },
-        { name: 'Natural', value: '#D2B48C' }
-      ],
-      features: [
-        'Long-lasting hydration',
-        'Natural rose extract',
-        'Vitamin E enriched',
-        'SPF 15 protection',
-        'Cruelty-free',
-        'Organic ingredients'
-      ],
-      ingredients: 'Rosa Damascena Flower Extract, Beeswax, Vitamin E, Shea Butter, Jojoba Oil, Coconut Oil, Natural Flavor',
-      howToUse: 'Apply liberally to lips as needed throughout the day. Can be worn alone or under lipstick.',
+      images: [roseLipBalm, roseLipBalm, roseLipBalm, roseLipBalm],
+      sizes: [{ name: '15ml', price: 1500, originalPrice: 2000 }],
+      colors: [{ name: 'Rose Pink', value: '#FFB6C1' }],
+      features: ['Natural ingredients', 'Long-lasting', 'Moisturizing'],
+      ingredients: 'Rose extract, Vitamin E, Beeswax',
+      howToUse: 'Apply to lips as needed',
       shipping: 'Free shipping on orders over KSh 5000'
     },
     2: {
       id: 2,
       name: 'Hydrating Serum',
       basePrice: 2500,
-      originalPrice: 3500,
-      discount: 29,
-      description: 'Transform your skin with our powerful Hydrating Serum. This lightweight formula penetrates deep into the skin to deliver intense hydration and restore your natural glow.',
+      originalPrice: 3000,
+      discount: 17,
+      description: 'Advanced hydrating serum with hyaluronic acid for deep skin hydration.',
       category: 'skincare',
       inStock: true,
       rating: 4.8,
-      reviews: 89,
-      images: [
-        hydratingSerum,
-        hydratingSerum,
-        hydratingSerum
-      ],
-      sizes: [
-        { name: '30ml', price: 2500, originalPrice: 3500 },
-        { name: '50ml', price: 3500, originalPrice: 4500 }
-      ],
-      colors: [
-        { name: 'Clear', value: 'transparent' }
-      ],
-      features: [
-        'Hyaluronic acid complex',
-        'Vitamin C brightening',
-        'Anti-aging properties',
-        'Oil-free formula',
-        'Dermatologist tested',
-        'Suitable for all skin types'
-      ],
-      ingredients: 'Hyaluronic Acid, Vitamin C, Vitamin E, Green Tea Extract, Aloe Vera, Glycerin, distilled Water',
-      howToUse: 'Apply 2-3 drops to clean face and neck, morning and evening. Gently massage until absorbed.',
+      reviews: 256,
+      images: [hydratingSerum, hydratingSerum, hydratingSerum],
+      sizes: [{ name: '30ml', price: 2500, originalPrice: 3000 }],
+      colors: [{ name: 'Clear', value: 'transparent' }],
+      features: ['Hyaluronic acid', 'Anti-aging', 'Fast absorption'],
+      ingredients: 'Hyaluronic acid, Vitamin C, Peptides',
+      howToUse: 'Apply to clean face morning and evening',
       shipping: 'Free shipping on orders over KSh 5000'
     },
     3: {
       id: 3,
       name: 'Glow Foundation',
-      basePrice: 3200,
-      originalPrice: 4000,
-      discount: 20,
-      description: 'Achieve a flawless, radiant complexion with our Glow Foundation. This lightweight formula provides buildable coverage while giving your skin a natural luminous finish.',
+      basePrice: 1800,
+      originalPrice: 2200,
+      discount: 18,
+      description: 'Lightweight foundation for natural, glowing coverage.',
       category: 'makeup',
       inStock: true,
-      rating: 4.6,
-      reviews: 95,
-      images: [
-        glowFoundation,
-        glowFoundation,
-        glowFoundation
-      ],
-      sizes: [
-        { name: '30ml', price: 3200, originalPrice: 4000 }
-      ],
-      colors: [
-        { name: 'Ivory', value: '#FFFFF0' },
-        { name: 'Natural', value: '#F5DEB3' },
-        { name: 'Tan', value: '#D2B48C' },
-        { name: 'Deep', value: '#8B4513' }
-      ],
-      features: [
-        'Buildable coverage',
-        'Natural luminous finish',
-        'SPF 20 protection',
-        'Long-lasting wear',
-        'Oil-free formula',
-        'Suitable for all skin types'
-      ],
-      ingredients: 'Water, Cyclopentasiloxane, Glycerin, Titanium Dioxide, Iron Oxides, Vitamin E, botanical extracts',
-      howToUse: 'Apply to clean, moisturized skin. Blend with foundation brush or sponge for seamless coverage.',
+      rating: 4.3,
+      reviews: 89,
+      images: [glowFoundation, glowFoundation, glowFoundation],
+      sizes: [{ name: '30ml', price: 1800, originalPrice: 2200 }],
+      colors: [{ name: 'Natural', value: '#F5DEB3' }],
+      features: ['Lightweight', 'Buildable coverage', 'SPF 15'],
+      ingredients: 'Water, minerals, SPF 15',
+      howToUse: 'Apply with sponge or brush',
       shipping: 'Free shipping on orders over KSh 5000'
     },
     4: {
       id: 4,
       name: 'Matte Lipstick',
-      basePrice: 1800,
-      originalPrice: 2500,
-      discount: 28,
-      description: 'Make a statement with our luxurious Matte Lipstick. This highly pigmented formula delivers intense color payoff with a comfortable, non-drying matte finish.',
+      basePrice: 1200,
+      originalPrice: 1800,
+      discount: 33,
+      description: 'Long-lasting matte lipstick in rich, vibrant colors.',
       category: 'makeup',
       inStock: true,
-      rating: 4.4,
-      reviews: 112,
-      images: [
-        matteLipstick,
-        matteLipstick,
-        matteLipstick
-      ],
-      sizes: [
-        { name: '3.5g', price: 1800, originalPrice: 2500 }
-      ],
-      colors: [
-        { name: 'Classic Red', value: '#DC143C' },
-        { name: 'Nude', value: '#E0B0A0' },
-        { name: 'Berry', value: '#8B4789' },
-        { name: 'Coral', value: '#FF7F50' }
-      ],
-      features: [
-        'Highly pigmented',
-        'Long-lasting wear',
-        'Non-drying formula',
-        'Vitamin E enriched',
-        'Creamy texture',
-        'Precise application'
-      ],
-      ingredients: 'Ceresin, Synthetic Wax, Ethylhexyl Palmitate, Vitamin E, Iron Oxides, Titanium Dioxide, fragrance',
-      howToUse: 'Apply directly to lips starting from the center and blending outward. For precise application, use a lip brush.',
+      rating: 4.6,
+      reviews: 167,
+      images: [matteLipstick, matteLipstick, matteLipstick],
+      sizes: [{ name: '3.5g', price: 1200, originalPrice: 1800 }],
+      colors: [{ name: 'Classic Red', value: '#DC143C' }],
+      features: ['Long-lasting', 'Matte finish', 'Non-drying'],
+      ingredients: 'Ceresin, Synthetic Wax, Vitamin E',
+      howToUse: 'Apply directly to lips',
       shipping: 'Free shipping on orders over KSh 5000'
     }
   };
 
+  // Load product data
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      // Handle undefined or invalid ID
-      if (!id) {
-        console.error('No product ID provided');
+    console.log('ProductDetails component mounted');
+    console.log('ID from params:', id);
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Simulate API call
+      setTimeout(() => {
+        if (!id) {
+          setError('No product ID provided');
+          setLoading(false);
+          return;
+        }
+        
+        const productId = parseInt(id);
+        console.log('Looking for product ID:', productId);
+        
+        const foundProduct = sampleProducts[productId];
+        console.log('Found product:', foundProduct);
+        
+        if (foundProduct) {
+          setProduct(foundProduct);
+          // Set default selections
+          if (foundProduct.sizes && foundProduct.sizes.length > 0) {
+            setSelectedSize(foundProduct.sizes[0].name);
+          }
+          if (foundProduct.colors && foundProduct.colors.length > 0) {
+            setSelectedColor(foundProduct.colors[0].value);
+          }
+        } else {
+          setError('Product not found');
+        }
+        
         setLoading(false);
-        return;
-      }
-      
-      const productId = parseInt(id); // Convert string ID to number
-      const foundProduct = sampleProducts[productId];
-      
-      if (foundProduct) {
-        setProduct(foundProduct);
-        if (foundProduct.sizes && foundProduct.sizes.length > 0) {
-          setSelectedSize(foundProduct.sizes[0].name);
-        }
-        if (foundProduct.colors && foundProduct.colors.length > 0) {
-          setSelectedColor(foundProduct.colors[0].value);
-        }
-      } else {
-        console.error('Product not found for ID:', productId);
-      }
+      }, 100);
+    } catch (err) {
+      console.error('Error in useEffect:', err);
+      setError('Failed to load product');
       setLoading(false);
-    }, 500);
+    }
   }, [id]);
 
-  // Get current price based on selected size
+  // Utility functions
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification({ message: '', type: 'success' }), 3000);
+  };
+
   const getCurrentPrice = () => {
     if (!product) return { price: 0, originalPrice: 0, discount: 0 };
     
-    // If product has sizes and a size is selected
     if (product.sizes && product.sizes.length > 0 && selectedSize) {
       const selectedSizeObj = product.sizes.find(size => size.name === selectedSize);
       if (selectedSizeObj) {
@@ -218,20 +171,11 @@ const ProductDetails = () => {
       }
     }
     
-    // Fallback to base prices
     return { 
       price: product.basePrice || 0, 
       originalPrice: product.originalPrice || product.basePrice || 0, 
       discount: product.discount || 0 
     };
-  };
-
-  const currentPrice = getCurrentPrice();
-
-  const handleSizeChange = (sizeName) => {
-    setSelectedSize(sizeName);
-    setPriceUpdated(true);
-    setTimeout(() => setPriceUpdated(false), 600);
   };
 
   const handleAddToCart = () => {
@@ -246,11 +190,7 @@ const ProductDetails = () => {
         return;
       }
       
-      if (!selectedColor) {
-        showNotification('Please select a color', 'error');
-        return;
-      }
-      
+      const currentPrice = getCurrentPrice();
       const cartItem = {
         ...product,
         price: currentPrice.price,
@@ -263,14 +203,16 @@ const ProductDetails = () => {
       
       addItem(cartItem);
       showNotification('Product added to cart!');
-    } catch (error) {
-      console.error('Error adding to cart:', error);
+    } catch (err) {
+      console.error('Error adding to cart:', err);
       showNotification('Failed to add product to cart', 'error');
     }
   };
 
   const handleToggleFavorite = () => {
-    if (product) {
+    try {
+      if (!product) return;
+      
       if (isFavorite(product.id)) {
         removeFavorite(product.id);
         showNotification('Removed from favorites');
@@ -278,14 +220,13 @@ const ProductDetails = () => {
         addFavorite(product);
         showNotification('Added to favorites!');
       }
+    } catch (err) {
+      console.error('Error toggling favorite:', err);
+      showNotification('Failed to update favorites', 'error');
     }
   };
 
-  const showNotification = (message, type = 'success') => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(''), 3000);
-  };
-
+  // Loading state
   if (loading) {
     return (
       <div className="product-details-page">
@@ -299,21 +240,25 @@ const ProductDetails = () => {
     );
   }
 
-  if (!product) {
+  // Error state
+  if (error || !product) {
     return (
       <div className="product-details-page">
         <div className="container">
           <div className="product-not-found">
-            <h2>Product Not Found</h2>
-            <p>The product you're looking for doesn't exist.</p>
-            <Link to="/products" className="btn-primary">
-              Back to Products
+            <h2>{error || 'Product Not Found'}</h2>
+            <p>The product you're looking for doesn't exist or has been removed.</p>
+            <Link to="/products" className="btn-back-to-products">
+              ← Back to Products
             </Link>
           </div>
         </div>
       </div>
     );
   }
+
+  // Success state - render product details
+  const currentPrice = getCurrentPrice();
 
   return (
     <div className="product-details-page">
@@ -331,7 +276,7 @@ const ProductDetails = () => {
           <span>/</span>
           <Link to="/products">Products</Link>
           <span>/</span>
-          <span>{product ? product.name : 'Loading...'}</span>
+          <span>{product.name}</span>
         </nav>
 
         <div className="product-details-container">
@@ -339,17 +284,15 @@ const ProductDetails = () => {
           <div className="product-images">
             <div className="main-image">
               <img 
-                src={product && product.images ? product.images[selectedImage] : ''} 
-                alt={product ? product.name : 'Product image'}
+                src={product.images[selectedImage]} 
+                alt={product.name}
                 onError={(e) => {
-                  if (product) {
-                    e.target.src = `https://via.placeholder.com/600x600/e91e63/ffffff?text=${encodeURIComponent(product.name)}`;
-                  }
+                  e.target.src = `https://via.placeholder.com/600x600/e91e63/ffffff?text=${encodeURIComponent(product.name)}`;
                 }}
               />
             </div>
             <div className="image-thumbnails">
-              {product && product.images && product.images.map((image, index) => (
+              {product.images.map((image, index) => (
                 <button
                   key={index}
                   className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
@@ -359,7 +302,7 @@ const ProductDetails = () => {
                     src={image} 
                     alt={`${product.name} ${index + 1}`}
                     onError={(e) => {
-                      e.target.src = `https://via.placeholder.com/80x80/e91e63/ffffff?text=${encodeURIComponent(product.name ? product.name.charAt(0) : 'P')}`;
+                      e.target.src = `https://via.placeholder.com/80x80/e91e63/ffffff?text=${encodeURIComponent(product.name.charAt(0))}`;
                     }}
                   />
                 </button>
@@ -370,23 +313,23 @@ const ProductDetails = () => {
           {/* Product Info */}
           <div className="product-info">
             <div className="product-header">
-              <span className="product-category">{product ? product.category : ''}</span>
-              <h1 className="product-title">{product ? product.name : 'Loading...'}</h1>
+              <span className="product-category">{product.category}</span>
+              <h1 className="product-title">{product.name}</h1>
               
               {/* Rating */}
               <div className="product-rating">
                 <div className="stars">
                   {[...Array(5)].map((_, i) => (
-                    <span key={i} className={i < Math.floor(product ? product.rating || 0 : 0) ? 'star filled' : 'star'}>
+                    <span key={i} className={i < Math.floor(product.rating) ? 'star filled' : 'star'}>
                       ★
                     </span>
                   ))}
                 </div>
-                <span className="rating-text">{product ? (product.rating || 0) : 0} ({product ? (product.reviews || 0) : 0} reviews)</span>
+                <span className="rating-text">{product.rating} ({product.reviews} reviews)</span>
               </div>
 
               {/* Price */}
-              <div className={`product-price ${priceUpdated ? 'price-updated' : ''}`}>
+              <div className="product-price">
                 <span className="current-price">KSh {currentPrice.price}</span>
                 {currentPrice.originalPrice && (
                   <>
@@ -399,13 +342,13 @@ const ProductDetails = () => {
 
             {/* Description */}
             <div className="product-description">
-              <p>{product ? product.description : 'Loading product description...'}</p>
+              <p>{product.description}</p>
             </div>
 
             {/* Product Options */}
             <div className="product-options">
               {/* Size Selection */}
-              {product && product.sizes && product.sizes.length > 0 && (
+              {product.sizes && product.sizes.length > 0 && (
                 <div className="option-group">
                   <label>Size:</label>
                   <div className="size-options">
@@ -413,7 +356,7 @@ const ProductDetails = () => {
                       <button
                         key={size.name}
                         className={`size-option ${selectedSize === size.name ? 'active' : ''}`}
-                        onClick={() => handleSizeChange(size.name)}
+                        onClick={() => setSelectedSize(size.name)}
                       >
                         {size.name}
                       </button>
@@ -423,7 +366,7 @@ const ProductDetails = () => {
               )}
 
               {/* Color Selection */}
-              {product && product.colors && product.colors.length > 0 && (
+              {product.colors && product.colors.length > 0 && (
                 <div className="option-group">
                   <label>Color:</label>
                   <div className="color-options">
@@ -435,52 +378,32 @@ const ProductDetails = () => {
                         style={{ backgroundColor: color.value === 'transparent' ? '#f0f0f0' : color.value }}
                         title={color.name}
                       >
-                        {color.value === 'transparent' && <span>Clear</span>}
+                        {color.value === 'transparent' && 'Clear'}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
-
-              {/* Quantity */}
-              <div className="option-group">
-                <label>Quantity:</label>
-                <div className="quantity-selector">
-                  <button 
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    disabled={quantity <= 1}
-                  >
-                    -
-                  </button>
-                  <input 
-                    type="number" 
-                    value={quantity} 
-                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    min="1"
-                  />
-                  <button onClick={() => setQuantity(quantity + 1)}>+</button>
-                </div>
-              </div>
             </div>
 
             {/* Action Buttons */}
             <div className="product-actions">
               <button 
-                className={`btn-add-cart ${product && !product.inStock ? 'disabled' : ''}`}
+                className={`btn-add-cart ${!product.inStock ? 'disabled' : ''}`}
                 onClick={handleAddToCart}
-                disabled={product && !product.inStock}
+                disabled={!product.inStock}
               >
-                {product && !product.inStock ? 'Out of Stock' : 'Add to Cart'}
+                {product.inStock ? 'Add to Cart' : 'Out of Stock'}
               </button>
               
               <button 
-                className={`btn-favorite ${product && isFavorite(product.id) ? 'active' : ''}`}
+                className={`btn-favorite ${isFavorite(product.id) ? 'active' : ''}`}
                 onClick={handleToggleFavorite}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill={product && isFavorite(product.id) ? "currentColor" : "none"}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill={isFavorite(product.id) ? "currentColor" : "none"}>
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                {product && isFavorite(product.id) ? 'Saved' : 'Save'}
+                {isFavorite(product.id) ? 'Saved' : 'Save'}
               </button>
             </div>
 
@@ -488,7 +411,7 @@ const ProductDetails = () => {
             <div className="product-features">
               <h3>Key Features</h3>
               <ul>
-                {product && product.features && product.features.map((feature, index) => (
+                {product.features.map((feature, index) => (
                   <li key={index}>✓ {feature}</li>
                 ))}
               </ul>
@@ -496,7 +419,7 @@ const ProductDetails = () => {
 
             {/* Shipping Info */}
             <div className="shipping-info">
-              <p>🚚 {product ? product.shipping : 'Loading shipping info...'}</p>
+              <p>🚚 {product.shipping}</p>
             </div>
           </div>
         </div>
@@ -513,33 +436,33 @@ const ProductDetails = () => {
           <div className="tab-content">
             <div className="tab-pane active">
               <h3>Product Description</h3>
-              <p>{product ? product.description : 'Loading product description...'}</p>
-              <p>Experience the ultimate in luxury and effectiveness with our carefully crafted formula. Each ingredient is selected for its proven benefits and compatibility with all skin types.</p>
+              <p>{product.description}</p>
+              <p>Experience the ultimate in luxury and effectiveness with our carefully crafted formula.</p>
             </div>
             
             <div className="tab-pane">
               <h3>Ingredients</h3>
-              <p>{product ? product.ingredients : 'Loading ingredients...'}</p>
+              <p>{product.ingredients}</p>
             </div>
             
             <div className="tab-pane">
               <h3>How to Use</h3>
-              <p>{product ? product.howToUse : 'Loading usage instructions...'}</p>
+              <p>{product.howToUse}</p>
             </div>
             
             <div className="tab-pane">
               <h3>Customer Reviews</h3>
               <div className="reviews-summary">
                 <div className="overall-rating">
-                  <span className="rating-number">{product ? (product.rating || 0) : 0}</span>
+                  <span className="rating-number">{product.rating}</span>
                   <div className="stars">
                     {[...Array(5)].map((_, i) => (
-                      <span key={i} className={i < Math.floor(product ? (product.rating || 0) : 0) ? 'star filled' : 'star'}>
+                      <span key={i} className={i < Math.floor(product.rating) ? 'star filled' : 'star'}>
                         ★
                       </span>
                     ))}
                   </div>
-                  <span className="reviews-count">Based on {product ? (product.reviews || 0) : 0} reviews</span>
+                  <span className="reviews-count">Based on {product.reviews} reviews</span>
                 </div>
               </div>
             </div>
@@ -550,9 +473,8 @@ const ProductDetails = () => {
         <div className="related-products">
           <h2>You Might Also Like</h2>
           <div className="related-products-grid">
-            {/* Dynamic related products based on available sample products */}
             {Object.values(sampleProducts)
-              .filter(p => product && p.id !== product.id && p.id <= 4)
+              .filter(p => p.id !== product.id && p.id <= 4)
               .slice(0, 2)
               .map(relatedProduct => (
                 <div key={relatedProduct.id} className="related-product-card">
@@ -565,13 +487,9 @@ const ProductDetails = () => {
                   />
                   <h4>{relatedProduct.name}</h4>
                   <p>KSh {relatedProduct.basePrice}</p>
-                  <a 
-                    href={`/product/${relatedProduct.id}`}
-                    className="btn-view-details"
-                    style={{ textDecoration: 'none', display: 'inline-block' }}
-                  >
+                  <Link to={`/product/${relatedProduct.id}`} className="btn-view-details">
                     View Details
-                  </a>
+                  </Link>
                 </div>
               ))}
           </div>
